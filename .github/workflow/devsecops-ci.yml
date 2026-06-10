@@ -1,0 +1,28 @@
+name: Docker Build and Trivy Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  docker-trivy-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t html-nginx-trivy-ci-test .
+
+      - name: Run Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: html-nginx-trivy-ci-test
+          format: table
+          exit-code: 0
+          severity: HIGH,CRITICAL
